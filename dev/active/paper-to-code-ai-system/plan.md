@@ -1,6 +1,26 @@
 # Paper→Code AI System - Implementation Plan
 
 **Last Updated:** 2025-12-25
+**Status:** Phase 0 - Foundation (Mock-First Learning Approach)
+
+---
+
+## 🎯 STRATEGIC PIVOT - LEARNING-FOCUSED APPROACH
+
+### New Primary Goal: Learn Professional GenAI Development
+This project has been refocused from "build a production system" to **"learn market-ready GenAI development skills"** while building a portfolio-worthy project.
+
+### Why Mock-First Development?
+1. **Zero API Costs** - Learn without spending money on Claude/GPT API calls
+2. **Professional Patterns** - Build the same architecture real companies use
+3. **Faster Iteration** - No waiting for API calls during development
+4. **Transferable Skills** - Everything you learn works with ANY LLM provider
+5. **Portfolio Ready** - Demonstrates architecture skills, not just API usage
+
+### Development Philosophy
+> "Build abstractions that work with mocks first, then swap in real LLMs with a config change"
+
+This is how professional teams build LLM applications - mock-driven development, clean abstractions, dependency injection.
 
 ---
 
@@ -9,14 +29,20 @@
 ### Project Vision
 Build an AI-driven system that converts scientific algorithm descriptions (papers, lecture notes, method sections) into correct, testable, and verifiable software implementations through structured reasoning, multi-stage validation, and automated evaluation.
 
+**Learning Focus:** Master the architecture, patterns, and practices of production GenAI systems.
+
 ### Core Principle
 This is **NOT** a single-prompt solution. This is a **systems engineering project** that decomposes the translation task into explicit reasoning stages, each with clear responsibilities, validation points, and failure surfaces.
 
+**Development Principle:** Build with mocks first, validate architecture, then integrate real LLMs.
+
 ### Success Criteria
-- ✅ Executable Python implementations from paper descriptions
-- ✅ Comprehensive test suites (unit, property-based, reference validation)
-- ✅ Traceable link from paper → algorithm → code
-- ✅ Logged dataset of transformations for future improvement
+- ✅ Professional LLM abstraction layer (works with any provider)
+- ✅ Sophisticated mock LLM for testing (no API costs)
+- ✅ Multi-agent orchestration architecture
+- ✅ Comprehensive test suites (unit, property-based, integration)
+- ✅ Portfolio-ready codebase demonstrating GenAI expertise
+- ✅ Optional: Real LLM integration (Claude/GPT) when ready
 - ✅ Measurable correctness metrics (not just "it runs")
 
 ---
@@ -90,14 +116,17 @@ Scientific Paper/Algorithm Description
 
 ### Technology Stack
 
-**LLM Provider:** Claude API (Anthropic)
-- Reasoning: Best-in-class for technical text and multi-step reasoning
-- Alternative: GPT-4 for comparison
+**LLM Architecture:** Provider-Agnostic Abstraction Layer
+- **Primary (Development):** Mock LLM Client (zero cost, full control)
+- **Secondary (Learning):** Optional Ollama integration (free, local)
+- **Production (Optional):** Claude API or GPT-4 (swap in later)
+- **Design:** Abstract base class + dependency injection
 
 **Language:** Python 3.11+
-- Async/await for API calls
-- Type hints throughout
+- Async/await for API calls (real and mocked)
+- Type hints throughout (enforced with mypy)
 - Pydantic for data validation
+- ABC (Abstract Base Classes) for LLM abstraction
 
 **Key Libraries:**
 - `anthropic` - Claude API client
@@ -118,52 +147,75 @@ Scientific Paper/Algorithm Description
 
 ## Implementation Phases
 
-### Phase 0: Foundation (Week 1)
-**Goal:** Set up development infrastructure and core utilities
+### Phase 0: Foundation (Week 1) - MOCK-FIRST APPROACH
+**Goal:** Build production-ready LLM abstraction layer with sophisticated mocking (ZERO API COST)
 
-#### Tasks:
-1. **Environment Setup**
-   - Create `requirements.txt` with all dependencies
-   - Set up virtual environment
-   - Configure API keys in `.env`
-   - Acceptance: `pip install -r requirements.txt` succeeds
+**Philosophy:** Learn professional patterns by building with mocks first, swap in real LLMs later.
 
-2. **Configuration System**
+#### Tasks (Reprioritized for Learning):
+
+1. **Environment Setup** ✅ COMPLETED
+   - Created `requirements-minimal.txt` (without Jupyter due to Windows path issues)
+   - Set up Python 3.11 conda environment
+   - Configured `.env.example` template
+   - Acceptance: Dependencies install successfully
+
+2. **Base LLM Client Architecture** (CRITICAL - Do This First!)
+   - Implement `src/llm/base.py` abstract base class
+   - Define common interface: `async def generate(prompt, **kwargs) -> str`
+   - Add error handling patterns (retry, timeout, fallback)
+   - Support both mock and real implementations
+   - Acceptance: Abstract base class with clear contract
+
+3. **Mock LLM Client Implementation** (PRIMARY LEARNING TOOL)
+   - Implement `src/llm/mock_client.py`
+   - Sophisticated mock responses based on prompt patterns
+   - Simulates: API delays, token counting, rate limits, occasional errors
+   - Configuration: Can set response templates, failure rates
+   - Acceptance: Mock client passes all abstract base class tests
+
+   **Why Mock First?**
+   - Zero API costs during development
+   - Full control over responses for testing
+   - Learn abstraction patterns (most valuable skill!)
+   - Faster iteration (no network calls)
+
+4. **Configuration System**
    - Implement `config/model_config.yaml` schema
    - Create `UnifiedConfig` class for loading configs
-   - Add API key management
-   - Acceptance: Config loads without errors, validates structure
+   - LLM provider selection: "mock", "claude", "openai", "ollama"
+   - Acceptance: Config switches between mock/real with ONE parameter
 
-3. **Logging System**
+5. **Logging System**
    - Implement structured logging (`src/utils/logger.py`)
-   - Configure log levels and formats
-   - Add file rotation
-   - Acceptance: Logs written to `data/logs/` with proper formatting
+   - Log mock vs real LLM calls differently
+   - Track simulated costs for mocks
+   - Acceptance: Clear visibility into which LLM is being used
 
-4. **Base LLM Client**
-   - Implement `src/llm/base.py` abstract base class
-   - Define common interface (generate, count_tokens, etc.)
-   - Add error handling patterns
-   - Acceptance: Base class defines clear contract
+6. **Claude Client Implementation** (OPTIONAL - Add When Ready)
+   - Implement `src/llm/claude_client.py` (same interface as mock!)
+   - Only needed if you want to test with real API
+   - Can skip entirely for learning
+   - Acceptance: Swappable with mock via config change
 
-5. **Claude Client Implementation**
-   - Implement `src/llm/claude_client.py`
-   - Async API calls with proper error handling
-   - Token counting and cost tracking
-   - Rate limiting (basic)
-   - Acceptance: Can call Claude API successfully
+7. **Utility Modules**
+   - `src/utils/rate_limiter.py` - Works with mock AND real clients
+   - `src/utils/token_counter.py` - Simulated for mocks, real for API
+   - `src/utils/cache.py` - Caches both mock and real responses
+   - Acceptance: All utilities work with mock client
 
-6. **Utility Modules**
-   - `src/utils/rate_limiter.py` - Token bucket algorithm
-   - `src/utils/token_counter.py` - Accurate token counting
-   - `src/utils/cache.py` - Response caching with TTL
-   - Acceptance: All utilities have unit tests
+**Learning Outcomes:**
+- ✅ Understand LLM abstraction architecture
+- ✅ Master async/await patterns
+- ✅ Learn dependency injection
+- ✅ Build testable AI systems
+- ✅ Zero API costs
 
 **Risks:**
-- API key issues → Solution: Clear error messages, validation at startup
-- Rate limiting complexity → Solution: Use simple token bucket, iterate later
+- Over-engineering mocks → Solution: Start simple, add sophistication as needed
+- Mock responses unrealistic → Solution: Add prompt pattern matching
 
-**Estimated Time:** 3-5 days
+**Estimated Time:** 3-5 days (same time, better learning!)
 
 ---
 

@@ -1,6 +1,28 @@
 # Paper→Code AI System - Context
 
 **Last Updated:** 2025-12-25
+**Status:** Phase 0 - Mock-First Learning Approach
+
+---
+
+## 🎯 STRATEGIC PIVOT (2025-12-25)
+
+### Primary Goal Shift
+**FROM:** "Build a production paper-to-code system with Claude API"
+**TO:** "Learn professional GenAI development skills while building portfolio project"
+
+### Key Insight
+User wants to **learn GenAI development for career/market entry**, not spend money on API calls during learning. This is actually a BETTER approach for skill development!
+
+### Mock-First Development Philosophy
+Build professional LLM abstractions with mocks first:
+- Zero API costs during development
+- Learn architecture patterns (transferable to any LLM)
+- Faster iteration (no network delays)
+- Better testing practices
+- Swap in real LLMs later with ONE config change
+
+This is how professional teams build LLM apps!
 
 ---
 
@@ -9,68 +31,86 @@
 ### ✅ COMPLETED
 - Reviewed GenAI Project Architecture (README.md)
 - Reviewed Claude Code Infrastructure Architecture
-  - Agents system (10 specialized agents)
-  - Skills system (auto-activation patterns)
-  - Dev-docs pattern
-  - Hooks and automation
-- Analyzed existing project structure
-- Made strategic decisions:
-  - LLM Choice: Claude API (not open-source initially)
-  - Verification: Layered approach (unit + property + reference)
-  - Development Approach: Dev-docs first, then skills
 - Created comprehensive 12-week implementation plan
+- Created 2 custom skills (genai-project-architecture, python-llm-dev-guidelines)
+- **Phase 0.1 Environment Setup:**
+  - Created requirements.txt + requirements-minimal.txt (no Jupyter due to Windows paths)
+  - Set up Python 3.11 conda environment
+  - Created .env.example, SETUP.md
+  - Updated .gitignore for Python
+  - Created data directory structure
+- **Strategic Pivot:**
+  - Updated plan.md for mock-first development
+  - Refocused on learning outcomes vs production deployment
 
 ### 🟡 IN PROGRESS
-- Creating dev-docs for Paper→Code AI System
-- File: `dev/active/paper-to-code-ai-system/plan.md` ✅ COMPLETE
-- File: `dev/active/paper-to-code-ai-system/context.md` (this file)
-- File: `dev/active/paper-to-code-ai-system/tasks.md` (next)
+- Updating dev-docs to reflect mock-first approach
+- File: `plan.md` ✅ UPDATED
+- File: `context.md` (this file) - IN PROGRESS
+- File: `tasks.md` - NEEDS UPDATE
 
 ### 📋 NEXT STEPS
-1. Complete tasks.md checklist
-2. Review plan together with user
-3. Identify exact skill requirements from plan
-4. Create 2 targeted skills:
-   - genai-project-architecture
-   - python-llm-dev-guidelines
-5. Begin Phase 0 implementation
+1. Update tasks.md with mock-first priorities
+2. Commit Phase 0.2 - Learning-focused architecture updates
+3. Begin Phase 0 implementation:
+   - Build BaseLLMClient abstract class
+   - Build MockLLMClient (PRIMARY LEARNING TOOL)
+   - Build configuration system
+   - Add optional Claude client later
 
 ### ⚠️ BLOCKERS
-None currently
+None - mock-first approach removes API key blocker!
 
 ---
 
 ## Key Decisions Made
 
-### 1. LLM Provider Choice
-**Decision:** Use Claude API (Anthropic) as primary LLM
+### 1. LLM Architecture (UPDATED 2025-12-25)
+**Decision:** Build provider-agnostic abstraction layer with mock-first development
+**Primary LLM:** MockLLMClient (sophisticated mock, zero cost)
+**Secondary LLM:** Optional - Claude/GPT/Ollama (swap in later)
+
 **Reasoning:**
-- Best-in-class reasoning on technical text
-- Strong multi-step algorithm reconstruction
-- Can swap to open-source later once pipeline proven
-- Focus on system design, not model weights
+- Learn professional architecture patterns (most valuable skill!)
+- Zero API costs during development
+- Faster iteration without network calls
+- Build once, works with ANY LLM provider
+- Optional: Add real LLM when ready with ONE config change
 
 **Alternatives Considered:**
-- Open-source LLMs (LLaMA, Mistral) → Deferred to Phase 2
-- GPT-4 → Will use for comparison benchmarks
+- ~~Claude API first~~ → Deferred (costs money, not needed for learning)
+- ~~GPT-4~~ → Deferred (costs money)
+- ✅ Mock LLM → PRIMARY (free, teaches architecture!)
+- Open-source (Ollama) → Optional secondary path
 
 ### 2. Verification Strategy
 **Decision:** Layered verification stack
 **Components:**
-1. Unit tests (mandatory baseline)
+1. Unit tests with mocks (mandatory baseline)
 2. Property-based testing (invariants)
-3. Reference cross-validation (compare to known implementations)
-4. Formal methods (optional, deferred)
+3. Integration tests (mock → real LLM swapping)
+4. Reference cross-validation (when using real LLMs)
 
-**Reasoning:** Each layer catches different failure types
+**Reasoning:** Each layer catches different failure types, mocks enable comprehensive testing
 
 ### 3. Development Sequence
-**Decision:** Create dev-docs plan BEFORE custom skills
+**Decision:** Dev-docs first, skills second, mock implementation third
 **Reasoning:**
 - Requirements-driven infrastructure
-- Avoid building skills we don't need
+- Build foundational abstractions before agents
 - Professional software engineering practice
-- Skills will target actual needs from plan
+- Skills guide actual needs from plan
+
+### 4. Learning Focus Over Production (NEW)
+**Decision:** Optimize for skill development and portfolio value
+**Priorities:**
+1. Learn abstraction architecture patterns
+2. Master async/await with LLMs
+3. Build testable AI systems
+4. Create portfolio-ready codebase
+5. Optional: Deploy with real LLMs later
+
+**Reasoning:** Market wants developers who understand architecture, not just API usage
 
 ### 4. Project Scope (MVP)
 **Decision:** 12-week timeline for full 9-stage pipeline
