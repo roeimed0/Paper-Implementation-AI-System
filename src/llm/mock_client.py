@@ -1,0 +1,307 @@
+"""
+Mock LLM Client - Learning Tool
+
+A sophisticated mock LLM client for development and testing.
+Simulates real LLM behavior without API costs.
+
+Key Learning Concepts:
+- Implements BaseLLMClient interface (teaches abstraction)
+- Simulates async delays (teaches async/await)
+- Pattern-based responses (teaches prompt engineering)
+- Error simulation (teaches error handling)
+- Token counting (teaches cost management)
+
+This is YOUR PRIMARY LEARNING TOOL - no API key needed!
+"""
+
+import asyncio
+import time
+import re
+from datetime import datetime
+from typing import Optional, List, Dict, Any
+from .base import BaseLLMClient, LLMConfig, LLMResponse, LLMError
+
+
+class MockLLMClient(BaseLLMClient):
+    """
+    Mock LLM client for development, testing, and learning.
+
+    Simulates realistic LLM behavior:
+    - Pattern-based responses (detects keywords in prompts)
+    - Simulated API delays
+    - Token counting
+    - Occasional errors (configurable)
+    - Cache simulation
+
+    Usage:
+        config = LLMConfig(provider="mock", model="mock-v1")
+        async with MockLLMClient(config) as client:
+            response = await client.generate("Explain quicksort")
+            print(response.content)  # Gets a smart mock response!
+    """
+
+    def __init__(self, config: LLMConfig):
+        super().__init__(config)
+        self._call_count = 0
+        self._cache: Dict[str, str] = {}
+
+        # Simulation settings (configurable)
+        self.simulate_delay = True
+        self.min_delay_ms = 100
+        self.max_delay_ms = 500
+        self.error_rate = 0.0  # 0.0 = never fail, 0.1 = 10% chance of error
+
+    async def initialize(self) -> None:
+        """Initialize mock client (instant, no real resources needed)."""
+        if self._initialized:
+            return
+
+        await asyncio.sleep(0.01)  # Simulate tiny initialization delay
+        self._initialized = True
+
+    async def cleanup(self) -> None:
+        """Cleanup mock client (nothing to clean up)."""
+        self._cache.clear()
+        self._initialized = False
+
+    async def generate(
+        self,
+        prompt: str,
+        *,
+        system_prompt: Optional[str] = None,
+        temperature: Optional[float] = None,
+        max_tokens: Optional[int] = None,
+        stop_sequences: Optional[List[str]] = None,
+        **kwargs
+    ) -> LLMResponse:
+        """
+        Generate mock response based on prompt patterns.
+
+        This teaches you:
+        - How to structure LLM generate() methods
+        - Async/await patterns
+        - Error handling
+        - Response construction
+        """
+        start_time = time.time()
+        self._call_count += 1
+
+        # Check cache first (teaching: caching pattern)
+        cache_key = f"{prompt}:{temperature}:{max_tokens}"
+        if self.config.enable_cache and cache_key in self._cache:
+            cached_content = self._cache[cache_key]
+            return self._build_response(
+                content=cached_content,
+                prompt_tokens=await self.count_tokens(prompt),
+                completion_tokens=await self.count_tokens(cached_content),
+                latency_ms=(time.time() - start_time) * 1000,
+                cached=True
+            )
+
+        # Simulate occasional errors (teaching: error handling)
+        if self.error_rate > 0 and (self._call_count % int(1 / self.error_rate)) == 0:
+            raise LLMError("Mock API error: Simulated failure for testing")
+
+        # Simulate API delay (teaching: async operations take time)
+        if self.simulate_delay:
+            delay = (self.min_delay_ms +
+                    (self.max_delay_ms - self.min_delay_ms) * (temperature or self.config.temperature)) / 1000
+            await asyncio.sleep(delay)
+
+        # Generate mock response based on prompt patterns
+        content = self._generate_smart_response(prompt, system_prompt)
+
+        # Cache response
+        if self.config.enable_cache:
+            self._cache[cache_key] = content
+
+        # Build standardized response
+        prompt_tokens = await self.count_tokens(prompt)
+        completion_tokens = await self.count_tokens(content)
+        latency_ms = (time.time() - start_time) * 1000
+
+        return self._build_response(
+            content=content,
+            prompt_tokens=prompt_tokens,
+            completion_tokens=completion_tokens,
+            latency_ms=latency_ms,
+            cached=False
+        )
+
+    def _generate_smart_response(self, prompt: str, system_prompt: Optional[str] = None) -> str:
+        """
+        Generate contextually relevant mock responses.
+
+        Teaching: This shows how to analyze prompts and generate appropriate responses.
+        In a real LLM, this is where the model does its magic.
+        """
+        prompt_lower = prompt.lower()
+
+        # Algorithm/code generation patterns
+        if any(kw in prompt_lower for kw in ["algorithm", "implement", "code", "function"]):
+            if "quicksort" in prompt_lower or "sort" in prompt_lower:
+                return self._mock_quicksort_response()
+            elif "binary search" in prompt_lower:
+                return self._mock_binary_search_response()
+            else:
+                return self._mock_generic_algorithm_response()
+
+        # Problem extraction patterns (for Reader Agent)
+        if any(kw in prompt_lower for kw in ["extract problem", "identify inputs", "define problem"]):
+            return self._mock_problem_extraction_response()
+
+        # Test generation patterns
+        if "test" in prompt_lower and ("generate" in prompt_lower or "write" in prompt_lower):
+            return self._mock_test_generation_response()
+
+        # Critique/review patterns (for Critic Agent)
+        if any(kw in prompt_lower for kw in ["critique", "review", "analyze", "verify"]):
+            return self._mock_critique_response()
+
+        # Default: Generic helpful response
+        return f"Mock response to: {prompt[:100]}...\n\nThis is a simulated LLM response. In a real implementation, this would be generated by the actual model."
+
+    def _mock_quicksort_response(self) -> str:
+        """Mock response for quicksort algorithm."""
+        return """def quicksort(arr):
+    if len(arr) <= 1:
+        return arr
+
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+
+    return quicksort(left) + middle + quicksort(right)"""
+
+    def _mock_binary_search_response(self) -> str:
+        """Mock response for binary search."""
+        return """def binary_search(arr, target):
+    left, right = 0, len(arr) - 1
+
+    while left <= right:
+        mid = (left + right) // 2
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+
+    return -1"""
+
+    def _mock_generic_algorithm_response(self) -> str:
+        """Generic algorithm response."""
+        return """def algorithm_implementation():
+    # Mock implementation
+    # This demonstrates the structure of an algorithm
+    result = process_input()
+    return result"""
+
+    def _mock_problem_extraction_response(self) -> str:
+        """Mock response for problem extraction (Reader Agent)."""
+        return """{
+    "problem_definition": "Sort an array of integers in ascending order",
+    "inputs": ["array of integers"],
+    "outputs": ["sorted array"],
+    "constraints": ["in-place sorting allowed", "stable sort not required"],
+    "edge_cases": ["empty array", "single element", "all duplicates"]
+}"""
+
+    def _mock_test_generation_response(self) -> str:
+        """Mock response for test generation."""
+        return """def test_algorithm():
+    # Test case 1: Normal input
+    assert algorithm([3, 1, 4, 1, 5]) == [1, 1, 3, 4, 5]
+
+    # Test case 2: Empty input
+    assert algorithm([]) == []
+
+    # Test case 3: Single element
+    assert algorithm([42]) == [42]"""
+
+    def _mock_critique_response(self) -> str:
+        """Mock response for code critique (Critic Agent)."""
+        return """CRITIQUE:
+1. ✅ Algorithm correctness: Implementation follows expected logic
+2. ✅ Edge cases: Handles empty and single-element cases
+3. ⚠️  Time complexity: O(n²) in worst case - could be optimized
+4. ✅ Code clarity: Well-structured and readable
+
+SUGGESTED IMPROVEMENTS:
+- Add input validation
+- Consider optimizing worst-case complexity
+- Add docstring documentation"""
+
+    async def count_tokens(self, text: str) -> int:
+        """
+        Count tokens (simulated - approximately 1 token per 4 characters).
+
+        Teaching: Real tokenizers are more complex, but this shows the concept.
+        """
+        # Simple approximation: ~1 token per 4 characters
+        return max(1, len(text) // 4)
+
+    async def stream_generate(
+        self,
+        prompt: str,
+        *,
+        system_prompt: Optional[str] = None,
+        **kwargs
+    ):
+        """
+        Simulate streaming generation (yields chunks).
+
+        Teaching: This shows how streaming APIs work - they yield text chunks
+        as they're generated rather than waiting for the complete response.
+        """
+        # Generate full response
+        response = await self.generate(prompt, system_prompt=system_prompt, **kwargs)
+        content = response.content
+
+        # Simulate streaming by yielding chunks
+        chunk_size = 20
+        for i in range(0, len(content), chunk_size):
+            chunk = content[i:i+chunk_size]
+            await asyncio.sleep(0.05)  # Simulate streaming delay
+            yield chunk
+
+    def _build_response(
+        self,
+        content: str,
+        prompt_tokens: int,
+        completion_tokens: int,
+        latency_ms: float,
+        cached: bool = False
+    ) -> LLMResponse:
+        """
+        Build standardized LLMResponse.
+
+        Teaching: This shows how to construct consistent response objects
+        that work across all LLM providers.
+        """
+        return LLMResponse(
+            content=content,
+            model=self.config.model,
+            provider=self.config.provider,
+            prompt_tokens=prompt_tokens,
+            completion_tokens=completion_tokens,
+            total_tokens=prompt_tokens + completion_tokens,
+            latency_ms=latency_ms,
+            timestamp=datetime.now(),
+            cached=cached,
+            raw_response={"mock": True, "call_count": self._call_count}
+        )
+
+    def get_stats(self) -> Dict[str, Any]:
+        """
+        Get mock client statistics.
+
+        Useful for debugging and understanding usage patterns.
+        """
+        return {
+            "call_count": self._call_count,
+            "cache_size": len(self._cache),
+            "provider": self.config.provider,
+            "model": self.config.model,
+        }
