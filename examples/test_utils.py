@@ -191,14 +191,14 @@ async def demo_combined():
     ]
 
     for i, prompt in enumerate(prompts, 1):
-        logger.info(f"Processing request {i}", prompt=prompt[:30])
+        logger.info(f"Processing request {i}: {prompt[:30]}")
 
         # Check cache first
         cache_key = f"response:{prompt}"
         cached_response = cache.get(cache_key)
 
         if cached_response:
-            logger.info("Cache hit!", prompt=prompt[:30])
+            logger.info(f"Cache hit for: {prompt[:30]}")
             print(f"  Request {i}: CACHED (free!)")
             continue
 
