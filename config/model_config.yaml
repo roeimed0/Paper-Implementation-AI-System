@@ -1,0 +1,105 @@
+# Paper→Code AI System - Model Configuration
+# This file controls which LLM provider to use and how to configure it
+
+# ==============================================================================
+# LLM Provider Selection (CHANGE THIS TO SWITCH PROVIDERS!)
+# ==============================================================================
+# Options: "mock", "claude", "openai", "ollama"
+provider: "mock"
+
+# ==============================================================================
+# Mock LLM Configuration (for development/testing - FREE!)
+# ==============================================================================
+mock:
+  model: "mock-v1"
+  temperature: 0.0
+  max_tokens: 4000
+
+  # Simulation settings
+  simulate_delay: true
+  min_delay_ms: 100
+  max_delay_ms: 500
+  error_rate: 0.0  # 0.0 = never fail, 0.1 = 10% failure rate
+
+# ==============================================================================
+# Claude Configuration (Anthropic API - COSTS MONEY)
+# ==============================================================================
+claude:
+  model: "claude-sonnet-4-5-20250929"
+  # API key loaded from environment variable: CLAUDE_API_KEY
+  temperature: 0.0
+  max_tokens: 4000
+  top_p: null
+
+  # Rate limits (adjust based on your tier)
+  requests_per_minute: 50
+  tokens_per_minute: 100000
+
+  # Retry settings
+  max_retries: 3
+  retry_delay_seconds: 1.0
+
+# ==============================================================================
+# OpenAI Configuration (GPT API - COSTS MONEY)
+# ==============================================================================
+openai:
+  model: "gpt-4"
+  # API key loaded from environment variable: OPENAI_API_KEY
+  temperature: 0.0
+  max_tokens: 4000
+  top_p: null
+
+  # Rate limits
+  requests_per_minute: 60
+  tokens_per_minute: 90000
+
+  # Retry settings
+  max_retries: 3
+  retry_delay_seconds: 1.0
+
+# ==============================================================================
+# Ollama Configuration (Local LLM - FREE!)
+# ==============================================================================
+ollama:
+  model: "llama3.1:70b"
+  base_url: "http://localhost:11434"
+  temperature: 0.0
+  max_tokens: 4000
+
+# ==============================================================================
+# Caching Configuration (applies to all providers)
+# ==============================================================================
+cache:
+  enable: true
+  ttl_seconds: 86400  # 24 hours
+  directory: "data/cache"
+
+# ==============================================================================
+# Logging Configuration
+# ==============================================================================
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  format: "json"  # json or text
+  directory: "data/logs"
+
+  # Log LLM calls
+  log_prompts: true
+  log_responses: true
+  log_token_usage: true
+
+# ==============================================================================
+# Cost Tracking
+# ==============================================================================
+cost_tracking:
+  enable: true
+  budget_usd: 500.00
+  alert_threshold: 0.8  # Alert at 80% of budget
+
+  # Pricing (USD per million tokens)
+  pricing:
+    claude-sonnet-4-5:
+      input: 3.00
+      output: 15.00
+    gpt-4:
+      input: 30.00
+      output: 60.00
