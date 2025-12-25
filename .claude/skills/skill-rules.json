@@ -218,6 +218,96 @@
                     "captureMessage"
                 ]
             }
+        },
+        "genai-project-architecture": {
+            "type": "domain",
+            "enforcement": "suggest",
+            "priority": "high",
+            "description": "Project structure and organization patterns for the Paper→Code GenAI System",
+            "promptTriggers": {
+                "keywords": [
+                    "project structure",
+                    "where should",
+                    "organize",
+                    "module organization",
+                    "directory structure",
+                    "pipeline stages",
+                    "data flow",
+                    "where does",
+                    "file organization",
+                    "architecture"
+                ],
+                "intentPatterns": [
+                    "where (should|does|do I put)",
+                    "(how to|how do I).*?(organize|structure)",
+                    "(create|add).*?(module|directory|folder)",
+                    "which (directory|folder|module)"
+                ]
+            },
+            "fileTriggers": {
+                "pathPatterns": [
+                    "src/**/*.py",
+                    "config/**/*.yaml",
+                    "data/**/*",
+                    "tests/**/*.py"
+                ],
+                "pathExclusions": [
+                    "**/__pycache__/**",
+                    "**/*.pyc",
+                    ".venv/**"
+                ]
+            }
+        },
+        "python-llm-dev-guidelines": {
+            "type": "domain",
+            "enforcement": "suggest",
+            "priority": "high",
+            "description": "Python implementation patterns for LLM-based applications",
+            "promptTriggers": {
+                "keywords": [
+                    "LLM",
+                    "Claude",
+                    "GPT",
+                    "API client",
+                    "async",
+                    "await",
+                    "agent",
+                    "prompt",
+                    "rate limit",
+                    "cache",
+                    "token",
+                    "anthropic",
+                    "openai",
+                    "pydantic",
+                    "schema validation"
+                ],
+                "intentPatterns": [
+                    "(create|implement|build).*?(agent|LLM|client)",
+                    "(how to|best practice).*?(async|LLM|API)",
+                    "(handle|fix).*?(rate limit|API error)",
+                    "(cache|optimize).*?(response|API call)",
+                    "(test|mock).*?(LLM|agent|API)"
+                ]
+            },
+            "fileTriggers": {
+                "pathPatterns": [
+                    "src/**/*.py"
+                ],
+                "pathExclusions": [
+                    "**/__pycache__/**",
+                    "**/*.pyc",
+                    "tests/**/*.py"
+                ],
+                "contentPatterns": [
+                    "import anthropic",
+                    "import openai",
+                    "async def",
+                    "await.*llm",
+                    "from pydantic import",
+                    "BaseModel",
+                    "@rate_limit"
+                ]
+            }
         }
     },
     "notes": {
