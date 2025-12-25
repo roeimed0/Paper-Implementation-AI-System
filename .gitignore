@@ -1,51 +1,110 @@
-# Dependencies
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
+# Paper→Code AI System - Git Ignore
 
-# Environment variables
+# ============================================================================
+# Environment & Secrets
+# ============================================================================
 .env
 .env.local
 .env.*.local
+*.env
 config.ini
 sentry.ini
 
+# ============================================================================
+# Python
+# ============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+*.virtualenv
+
+# Testing
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.pytest_cache/
+.hypothesis/
+coverage.xml
+*.cover
+
+# Jupyter
+.ipynb_checkpoints
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# ============================================================================
+# Project Data
+# ============================================================================
+# Cache
+data/cache/**
+!data/cache/.gitkeep
+
 # Logs
+data/logs/**
 logs/
 *.log
 pm2-logs/
+!data/logs/.gitkeep
 
-# Build outputs
-dist/
-build/
-*.tsbuildinfo
+# Outputs
+data/outputs/**
+!data/outputs/.gitkeep
 
-# IDE
+# Datasets
+data/datasets/*.db
+data/datasets/*.sqlite
+!data/datasets/.gitkeep
+
+# ============================================================================
+# IDE & OS
+# ============================================================================
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
-
-# OS
 .DS_Store
 Thumbs.db
 
-# Testing
-coverage/
-.nyc_output/
-
-# Temporary files
+# ============================================================================
+# Temporary
+# ============================================================================
 tmp/
 temp/
 *.tmp
 
-# Database
-*.sqlite
-*.db
-
-# Prisma
-.env
-prisma/.env
+# ============================================================================
+# Node.js (legacy - can remove if not needed)
+# ============================================================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*

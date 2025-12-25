@@ -1,0 +1,93 @@
+# Paper→Code AI System - Python Dependencies
+# Phase 0 - Foundation (Week 1)
+
+# ============================================================================
+# Core LLM Clients
+# ============================================================================
+anthropic>=0.39.0          # Claude API client
+openai>=1.54.0             # OpenAI GPT client (for comparison)
+
+# ============================================================================
+# Data Validation & Schemas
+# ============================================================================
+pydantic>=2.10.0           # Data validation with Python type hints
+pydantic-settings>=2.6.0   # Settings management with Pydantic
+
+# ============================================================================
+# Async & HTTP
+# ============================================================================
+aiohttp>=3.11.0            # Async HTTP client
+asyncio-throttle>=1.0.2    # Async rate limiting
+httpx>=0.28.0              # HTTP client with async support
+
+# ============================================================================
+# Configuration Management
+# ============================================================================
+python-dotenv>=1.0.1       # Environment variable management
+pyyaml>=6.0.2              # YAML configuration files
+
+# ============================================================================
+# PDF & Text Processing (Phase 1)
+# ============================================================================
+pypdf>=5.1.0               # PDF text extraction
+PyMuPDF>=1.25.1            # Alternative PDF library (fallback)
+python-magic>=0.4.27       # File type detection
+
+# ============================================================================
+# Token Counting & Cost Tracking
+# ============================================================================
+tiktoken>=0.8.0            # OpenAI tokenizer (approximation for Claude)
+
+# ============================================================================
+# Testing Framework
+# ============================================================================
+pytest>=8.3.0              # Testing framework
+pytest-asyncio>=0.24.0     # Async test support
+pytest-cov>=6.0.0          # Coverage reporting
+pytest-mock>=3.14.0        # Mocking utilities
+hypothesis>=6.122.0        # Property-based testing
+
+# ============================================================================
+# Code Quality & Linting
+# ============================================================================
+ruff>=0.8.0                # Fast Python linter
+black>=24.10.0             # Code formatter
+mypy>=1.13.0               # Static type checker
+isort>=5.13.0              # Import sorting
+
+# ============================================================================
+# Database (Phase 9 - Dataset Logging)
+# ============================================================================
+sqlalchemy>=2.0.36         # SQL toolkit and ORM
+aiosqlite>=0.20.0          # Async SQLite
+
+# ============================================================================
+# Development Tools
+# ============================================================================
+ipython>=8.30.0            # Enhanced Python shell
+jupyter>=1.1.1             # Jupyter notebooks
+notebook>=7.3.1            # Jupyter notebook interface
+
+# ============================================================================
+# Logging & Monitoring
+# ============================================================================
+structlog>=24.4.0          # Structured logging
+python-json-logger>=3.2.0  # JSON log formatting
+
+# ============================================================================
+# Utilities
+# ============================================================================
+rich>=13.9.4               # Rich text and formatting in terminal
+click>=8.1.7               # CLI creation
+tqdm>=4.67.1               # Progress bars
+
+# ============================================================================
+# Optional: Formal Verification (Post-MVP)
+# ============================================================================
+# z3-solver>=4.13.0        # SMT solver (uncomment if using formal methods)
+
+# ============================================================================
+# Version Constraints
+# ============================================================================
+# Python 3.11+ required
+# Install with: pip install -r requirements.txt
