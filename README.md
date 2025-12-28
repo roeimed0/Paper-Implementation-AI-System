@@ -1,153 +1,192 @@
-# Generative AI Project Template
+# Paper→Code AI System
 
-A structured template for building robust generative AI applications, with modular organization and best practices built-in.
+An AI-driven system that converts scientific algorithm descriptions into verified, executable implementations through multi-agent reasoning and validation.
 
-![genai_project](https://github.com/honestsoul/generative_ai_project/blob/96dae125f58ede47f1bc3034790498f103903772/examples/genai_project.jpg)
+**Status:** Phase 0 Complete (Foundation Infrastructure) ✅
 
+## 🎯 Project Goals
 
+- **Learning Focus:** Master professional GenAI development patterns
+- **Mock-First Development:** Build with zero API costs, swap to real LLMs later
+- **Production Patterns:** Industry-standard architecture and best practices
+- **Portfolio Ready:** Demonstrate senior-level GenAI engineering skills
 
-## 🌟 Features
+## 🏗️ Architecture
 
-- Modular project structure for scalability
-- Pre-configured support for multiple LLM providers (Claude, GPT)
-- Built-in prompt engineering utilities
-- Rate limiting and token management
-- Robust error handling
-- Caching mechanism for API responses
-- Example implementations and notebooks
+### Mock-First Approach
+This project is built using **mock-first development** - a professional pattern where you:
+1. Build complete LLM abstraction layer
+2. Develop with sophisticated mocks (zero cost)
+3. Swap to real LLMs (Claude/GPT) with ONE config change
 
-## 📁 Project Structure
-
-```
-generative_ai_project/
-├── config/                  # Configuration directory
-│   ├── __init__.py
-│   ├── model_config.yaml    # Model-specific configurations
-│   ├── prompt_templates.yaml # Prompt templates
-│   └── logging_config.yaml  # Logging settings
-│
-├── src/                     # Source code
-│   ├── llm/                # LLM clients
-│   │   ├── base.py         # Base LLM client
-│   │   ├── claude_client.py # Anthropic Claude client
-│   │   ├── gpt_client.py   # OpenAI GPT client
-│   │   └── utils.py        # Shared utilities
-│   │
-│   ├── prompt_engineering/ # Prompt engineering tools
-│   │   ├── templates.py    # Template management
-│   │   ├── few_shot.py    # Few-shot prompt utilities
-│   │   └── chain.py       # Prompt chaining logic
-│   │
-│   ├── utils/             # Utility functions
-│   │   ├── rate_limiter.py # API rate limiting
-│   │   ├── token_counter.py # Token counting
-│   │   ├── cache.py       # Response caching
-│   │   └── logger.py      # Logging utilities
-│   │
-│   └── handlers/          # Error handling
-│       └── error_handler.py
-│
-├── data/                   # Data directory
-│   ├── cache/             # Cache storage
-│   ├── prompts/           # Prompt storage
-│   ├── outputs/           # Output storage
-│   └── embeddings/        # Embedding storage
-│
-├── examples/              # Example implementations
-│   ├── basic_completion.py
-│   ├── chat_session.py
-│   └── chain_prompts.py
-│
-└── notebooks/            # Jupyter notebooks
-    ├── prompt_testing.ipynb
-    ├── response_analysis.ipynb
-    └── model_experimentation.ipynb
-```
-
-## 🚀 Getting Started
-
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/generative_ai_project.git
-cd generative_ai_project
-```
-
-2. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-3. Configure your environment:
-   - Copy `config/model_config.yaml.example` to `config/model_config.yaml`
-   - Add your API keys and configurations
-
-4. Review the examples in `examples/` directory
-
-5. Start with the notebooks in `notebooks/` for experimentation
-
-## 📘 Documentation
-
-### Configuration
-
-- `model_config.yaml`: Configure API keys and model parameters
-- `prompt_templates.yaml`: Define reusable prompt templates
-- `logging_config.yaml`: Configure logging behavior
+**Total Development Cost:** $0.00 💰
 
 ### Key Components
 
-1. **LLM Clients** (`src/llm/`)
-   - Base client with common functionality
-   - Specific implementations for different providers
-   - Utility functions for token counting and rate limiting
+#### ✅ Phase 0: Foundation (COMPLETE)
+- **LLM Abstraction Layer** - Provider-agnostic interface supporting mock, Claude, OpenAI, Ollama
+- **Configuration System** - YAML + environment variables, hot-swappable providers
+- **Rate Limiter** - Token bucket algorithm (same as AWS, Stripe, GitHub)
+- **Token Counter** - Accurate cost estimation with tiktoken
+- **Cache Manager** - TTL-based file caching with statistics
+- **Logging System** - Rich console output + file logging
 
-2. **Prompt Engineering** (`src/prompt_engineering/`)
-   - Template management system
-   - Few-shot prompt utilities
-   - Prompt chaining capabilities
+#### 🚧 Phase 1-10: Coming Soon
+- Multi-agent pipeline (Reader, Planner, Implementer, Critic)
+- PDF processing and text extraction
+- Verification framework (unit, property-based, reference tests)
+- Dataset logging and evaluation
 
-3. **Utilities** (`src/utils/`)
-   - Rate limiting for API calls
-   - Token counting
-   - Response caching
-   - Logging
+## 🚀 Quick Start
 
-## 🛠️ Development
+### Prerequisites
+- Python 3.11+
+- Conda or venv
 
-### Best Practices
+### Installation
 
-1. Keep configuration in YAML files
-2. Implement proper error handling
-3. Use rate limiting for APIs
-4. Maintain separation between model clients
-5. Cache results when appropriate
-6. Document your code
-7. Use notebooks for experimentation
+```bash
+# Clone the repository
+git clone https://github.com/roeimed0/Paper-Implementation-AI-System.git
+cd Paper-Implementation-AI-System
 
-### Tips
+# Create conda environment
+conda create -n paper-to-code python=3.11
+conda activate paper-to-code
 
-- Follow modular design principles
-- Write tests for new components
-- Use proper version control
-- Keep documentation updated
-- Monitor API usage and limits
+# Install dependencies
+pip install -r requirements-minimal.txt
+
+# Test the infrastructure
+python examples/test_mock_llm.py
+python examples/test_config.py
+python examples/test_utils.py
+```
+
+### Demo the Mock LLM
+
+```python
+import asyncio
+from src.llm import MockLLMClient, LLMConfig
+
+async def main():
+    config = LLMConfig(provider="mock", model="mock-v1")
+
+    async with MockLLMClient(config) as client:
+        response = await client.generate("Implement quicksort algorithm")
+        print(response.content)
+        print(f"Tokens: {response.total_tokens}")
+        print(f"Cost: ${response.cost_usd:.4f}")  # $0.00!
+
+asyncio.run(main())
+```
+
+## 📚 Learning Outcomes
+
+### Design Patterns
+- ✅ Abstract Base Classes (provider-agnostic interfaces)
+- ✅ Async/Await (non-blocking I/O)
+- ✅ Context Managers (resource management)
+- ✅ Singleton Pattern (global configuration)
+- ✅ Token Bucket Algorithm (rate limiting)
+- ✅ Dependency Injection (flexible architecture)
+
+### Production Skills
+- ✅ Pydantic for type safety
+- ✅ Structured logging
+- ✅ Cost tracking and budgets
+- ✅ File-based caching with TTL
+- ✅ Mock-driven development
+- ✅ 12-Factor App configuration
+
+## 🛠️ Technology Stack
+
+- **Language:** Python 3.11+
+- **LLM Clients:** Mock (dev), Claude API, OpenAI API, Ollama (optional)
+- **Validation:** Pydantic
+- **Async:** asyncio, aiohttp
+- **Logging:** Rich, standard logging
+- **Testing:** pytest, pytest-asyncio, hypothesis
+- **Code Quality:** ruff, black, mypy
+
+## 📊 Project Structure
+
+```
+Paper-Implementation-AI-System/
+├── .claude/                    # Claude Code integration
+│   ├── agents/                 # Specialized AI agents
+│   ├── skills/                 # Custom development skills
+│   └── settings.json           # Configuration
+├── config/                     # System configuration
+│   └── model_config.yaml       # LLM provider settings
+├── src/
+│   ├── llm/                    # LLM abstraction layer
+│   │   ├── base.py            # Abstract interface
+│   │   └── mock_client.py     # Mock implementation
+│   ├── config/                 # Configuration management
+│   └── utils/                  # Utilities
+│       ├── rate_limiter.py    # Token bucket algorithm
+│       ├── token_counter.py   # Cost estimation
+│       ├── cache.py           # TTL caching
+│       └── logger.py          # Logging setup
+├── examples/                   # Working demos
+│   ├── test_mock_llm.py       # LLM abstraction demo
+│   ├── test_config.py         # Configuration demo
+│   └── test_utils.py          # Utilities demo
+└── dev/                        # Development docs
+    └── active/
+        └── paper-to-code-ai-system/
+            ├── plan.md         # 12-week implementation plan
+            ├── context.md      # Session progress tracking
+            └── tasks.md        # Phase-by-phase checklist
+```
+
+## 🎓 For Employers/Portfolio
+
+This project demonstrates:
+
+- **Architecture Skills:** Built provider-agnostic LLM abstraction supporting multiple providers
+- **Production Patterns:** Token bucket rate limiting, TTL caching, budget tracking
+- **Cost Optimization:** Zero-cost development with sophisticated mocking
+- **Type Safety:** Pydantic models throughout for validation
+- **Async Programming:** Non-blocking I/O for concurrent LLM calls
+- **Testing:** Mock-driven development enabling comprehensive testing
+
+**Interview-Ready Example:**
+> "I built a GenAI system with provider-agnostic LLM abstraction layer. Used abstract base classes to define interfaces, implemented both mock and real clients, and employed async/await for performance. The architecture supports swapping between Claude, GPT, or local models with just a config change. I also implemented token bucket rate limiting and TTL-based caching for production use."
+
+## 📈 Development Progress
+
+- [x] Phase 0: Foundation Infrastructure (100%)
+  - [x] Environment setup
+  - [x] LLM abstraction layer
+  - [x] Configuration system
+  - [x] Logging system
+  - [x] Rate limiter
+  - [x] Token counter
+  - [x] Cache manager
+- [ ] Phase 1: Input Acquisition
+- [ ] Phase 2: Reader Agent
+- [ ] Phase 3: Planner Agent
+- [ ] Phase 4-10: Remaining pipeline stages
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+This is a learning project. Feel free to:
+- Fork and experiment
+- Suggest improvements
+- Share your own implementations
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - see LICENSE file for details
 
-## 👤 Author
+## 🙏 Acknowledgments
 
-- **Brij Kishore Pandey**
-
-## 📧 Contact
-
-For any queries, reach out to:
-- GitHub: [@honestsoul](https://github.com/honestsoul)
-- Email: brij.pydata@gmail.com
+- Built using mock-first development methodology
+- Inspired by production GenAI systems
+- Developed with Claude Code for rapid iteration
 
 ---
-⭐ If you find this template useful, please consider giving it a star!
+
+**Status:** Active Development | Phase 0 Complete ✅ | Total Cost: $0.00 💰
