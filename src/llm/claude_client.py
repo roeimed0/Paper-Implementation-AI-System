@@ -1,6 +1,8 @@
 """
 Placeholder for Claude API Client Implementation
 
+NOT IMPLEMENTED
+
 This file shows where the Claude client will be implemented
 when real API integration is needed.
 
@@ -18,3 +20,5 @@ When ready to use:
 - Set CLAUDE_API_KEY in .env
 - Change provider: "claude" in config/model_config.yaml
 """
+
+# NOT IMPLEMENTED - This is a placeholder for future Claude API integration

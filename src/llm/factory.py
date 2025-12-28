@@ -59,36 +59,42 @@ class ClientFactory:
             return MockLLMClient(config)
 
         elif provider == "claude":
+            # NOT IMPLEMENTED - Claude client placeholder exists but not implemented
             # Import here to avoid dependency if not using Claude
             try:
                 from .claude_client import ClaudeClient  # type: ignore[attr-defined]
                 return ClaudeClient(config)  # type: ignore[possibly-undefined]
-            except ImportError:
+            except (ImportError, AttributeError):
                 raise ValueError(
-                    "Claude provider requires 'anthropic' package. "
-                    "Install with: pip install anthropic"
+                    "Claude provider not implemented yet. "
+                    "See src/llm/claude_client.py for implementation guide. "
+                    "Will require: pip install anthropic"
                 )
 
         elif provider == "openai":
+            # NOT IMPLEMENTED - OpenAI client placeholder exists but not implemented
             # Import here to avoid dependency if not using OpenAI
             try:
                 from .openai_client import OpenAIClient  # type: ignore[attr-defined]
                 return OpenAIClient(config)  # type: ignore[possibly-undefined]
-            except ImportError:
+            except (ImportError, AttributeError):
                 raise ValueError(
-                    "OpenAI provider requires 'openai' package. "
-                    "Install with: pip install openai"
+                    "OpenAI provider not implemented yet. "
+                    "See src/llm/openai_client.py for implementation guide. "
+                    "Will require: pip install openai"
                 )
 
         elif provider == "ollama":
+            # NOT IMPLEMENTED - Ollama client not created yet
             # Import here to avoid dependency if not using Ollama
             try:
                 from .ollama_client import OllamaClient  # type: ignore[import-not-found,attr-defined]
                 return OllamaClient(config)  # type: ignore[possibly-undefined]
-            except ImportError:
+            except (ImportError, AttributeError):
                 raise ValueError(
-                    "Ollama provider requires 'ollama' package. "
-                    "Install with: pip install ollama"
+                    "Ollama provider not implemented yet. "
+                    "Create src/llm/ollama_client.py following BaseLLMClient interface. "
+                    "Will require: pip install ollama"
                 )
 
         else:

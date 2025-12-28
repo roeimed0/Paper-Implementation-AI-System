@@ -1,6 +1,8 @@
 """
 Placeholder for LLM Utility Functions
 
+NOT IMPLEMENTED
+
 This file shows where shared LLM utilities will be implemented.
 
 Potential utilities:
@@ -20,3 +22,5 @@ To implement:
 3. Create reusable helper functions
 4. Add comprehensive error handling
 """
+
+# NOT IMPLEMENTED - This is a placeholder for shared LLM utility functions

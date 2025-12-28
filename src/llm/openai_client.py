@@ -1,6 +1,8 @@
 """
 Placeholder for OpenAI API Client Implementation
 
+NOT IMPLEMENTED
+
 This file shows where the OpenAI client will be implemented
 when real API integration is needed.
 
@@ -18,3 +20,5 @@ When ready to use:
 - Set OPENAI_API_KEY in .env
 - Change provider: "openai" in config/model_config.yaml
 """
+
+# NOT IMPLEMENTED - This is a placeholder for future OpenAI API integration
