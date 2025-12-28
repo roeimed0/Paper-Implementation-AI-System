@@ -260,8 +260,39 @@ SUGGESTED IMPROVEMENTS:
         Analyzes the prompt to determine what kind of structured data to return.
         """
         prompt_lower = prompt.lower()
+        system_lower = (system_prompt or "").lower()
 
-        # Algorithm information extraction
+        # Check if this is a problem definition extraction (Lesson 2 pattern)
+        # Look for "problem_statement" in the schema or "problem definition" in the prompt
+        is_problem_extraction = (
+            "problem_statement" in system_lower or
+            "extract the problem" in prompt_lower or
+            ("problem" in prompt_lower and "definition" in prompt_lower)
+        )
+
+        # If problem extraction, return ProblemDefinition schema
+        if is_problem_extraction:
+            if "merge sort" in prompt_lower or "merging" in prompt_lower:
+                return """{
+  "problem_statement": "Sort an array by dividing it into halves and merging sorted subarrays",
+  "inputs": ["unsorted array of comparable elements"],
+  "outputs": ["sorted array maintaining original elements"],
+  "constraints": ["requires O(n) extra space", "works on any comparable type"],
+  "edge_cases": ["empty array", "single element", "already sorted", "reverse sorted"],
+  "assumptions": ["elements are comparable", "stable sort preserves equal element order"]
+}"""
+            else:
+                # Generic problem extraction
+                return """{
+  "problem_statement": "Solve the algorithmic problem described in the text",
+  "inputs": ["input data as described"],
+  "outputs": ["computed result"],
+  "constraints": ["constraints as stated"],
+  "edge_cases": ["boundary conditions mentioned"],
+  "assumptions": ["implicit assumptions from context"]
+}"""
+
+        # Algorithm information extraction (Lesson 1 pattern)
         if any(kw in prompt_lower for kw in ["binary search", "binarysearch"]):
             return """{
   "algorithm_name": "Binary Search",
@@ -285,29 +316,6 @@ SUGGESTED IMPROVEMENTS:
   "inputs": ["weighted graph with non-negative edges", "source vertex"],
   "outputs": ["dictionary mapping vertices to shortest distances"],
   "time_complexity": "O((V + E) log V) with binary heap"
-}"""
-
-        # Problem definition extraction (Reader Agent pattern)
-        elif "problem definition" in prompt_lower or "extract the problem" in prompt_lower:
-            # Analyze the prompt text to extract problem info
-            if "merge sort" in prompt_lower or "merging" in prompt_lower:
-                return """{
-  "problem_statement": "Sort an array by dividing it into halves and merging sorted subarrays",
-  "inputs": ["unsorted array of comparable elements"],
-  "outputs": ["sorted array maintaining original elements"],
-  "constraints": ["requires O(n) extra space", "works on any comparable type"],
-  "edge_cases": ["empty array", "single element", "already sorted", "reverse sorted"],
-  "assumptions": ["elements are comparable", "stable sort preserves equal element order"]
-}"""
-            else:
-                # Generic problem extraction
-                return """{
-  "problem_statement": "Solve the algorithmic problem described in the text",
-  "inputs": ["input data as described"],
-  "outputs": ["computed result"],
-  "constraints": ["constraints as stated"],
-  "edge_cases": ["boundary conditions mentioned"],
-  "assumptions": ["implicit assumptions from context"]
 }"""
 
         # Default: Generic structured response
