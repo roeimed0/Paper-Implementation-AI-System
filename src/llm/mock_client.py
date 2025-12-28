@@ -148,15 +148,23 @@ class MockLLMClient(BaseLLMClient):
         In a real LLM, this is where the model does its magic.
         """
         prompt_lower = prompt.lower()
+        system_lower = (system_prompt or "").lower()
+
+        # JSON extraction patterns (check system prompt for JSON instructions)
+        if system_lower and any(kw in system_lower for kw in ["json", "output format", "structured"]):
+            # This is a structured extraction request
+            return self._mock_json_extraction_response(prompt, system_prompt)
 
         # Algorithm/code generation patterns
         if any(kw in prompt_lower for kw in ["algorithm", "implement", "code", "function"]):
-            if "quicksort" in prompt_lower or "sort" in prompt_lower:
-                return self._mock_quicksort_response()
-            elif "binary search" in prompt_lower:
-                return self._mock_binary_search_response()
-            else:
-                return self._mock_generic_algorithm_response()
+            # But NOT if asking for JSON output
+            if "json" not in prompt_lower:
+                if "quicksort" in prompt_lower or "sort" in prompt_lower:
+                    return self._mock_quicksort_response()
+                elif "binary search" in prompt_lower:
+                    return self._mock_binary_search_response()
+                else:
+                    return self._mock_generic_algorithm_response()
 
         # Problem extraction patterns (for Reader Agent)
         if any(kw in prompt_lower for kw in ["extract problem", "identify inputs", "define problem"]):
@@ -244,6 +252,69 @@ SUGGESTED IMPROVEMENTS:
 - Add input validation
 - Consider optimizing worst-case complexity
 - Add docstring documentation"""
+
+    def _mock_json_extraction_response(self, prompt: str, system_prompt: Optional[str]) -> str:
+        """
+        Mock response for JSON extraction requests.
+
+        Analyzes the prompt to determine what kind of structured data to return.
+        """
+        prompt_lower = prompt.lower()
+
+        # Algorithm information extraction
+        if any(kw in prompt_lower for kw in ["binary search", "binarysearch"]):
+            return """{
+  "algorithm_name": "Binary Search",
+  "purpose": "Find the index of a target value in a sorted array",
+  "inputs": ["sorted array of comparable elements", "target value to find"],
+  "outputs": ["integer index (0-based) of target, or -1 if not found"],
+  "time_complexity": "O(log n)"
+}"""
+        elif any(kw in prompt_lower for kw in ["merge sort", "mergesort"]):
+            return """{
+  "algorithm_name": "Merge Sort",
+  "purpose": "Sort an array of elements using divide-and-conquer",
+  "inputs": ["unsorted array of comparable elements"],
+  "outputs": ["sorted array in ascending order"],
+  "time_complexity": "O(n log n) in all cases"
+}"""
+        elif any(kw in prompt_lower for kw in ["dijkstra"]):
+            return """{
+  "algorithm_name": "Dijkstra's Shortest Path",
+  "purpose": "Find shortest paths from source to all nodes in weighted graph",
+  "inputs": ["weighted graph with non-negative edges", "source vertex"],
+  "outputs": ["dictionary mapping vertices to shortest distances"],
+  "time_complexity": "O((V + E) log V) with binary heap"
+}"""
+
+        # Problem definition extraction (Reader Agent pattern)
+        elif "problem definition" in prompt_lower or "extract the problem" in prompt_lower:
+            # Analyze the prompt text to extract problem info
+            if "merge sort" in prompt_lower or "merging" in prompt_lower:
+                return """{
+  "problem_statement": "Sort an array by dividing it into halves and merging sorted subarrays",
+  "inputs": ["unsorted array of comparable elements"],
+  "outputs": ["sorted array maintaining original elements"],
+  "constraints": ["requires O(n) extra space", "works on any comparable type"],
+  "edge_cases": ["empty array", "single element", "already sorted", "reverse sorted"],
+  "assumptions": ["elements are comparable", "stable sort preserves equal element order"]
+}"""
+            else:
+                # Generic problem extraction
+                return """{
+  "problem_statement": "Solve the algorithmic problem described in the text",
+  "inputs": ["input data as described"],
+  "outputs": ["computed result"],
+  "constraints": ["constraints as stated"],
+  "edge_cases": ["boundary conditions mentioned"],
+  "assumptions": ["implicit assumptions from context"]
+}"""
+
+        # Default: Generic structured response
+        return """{
+  "extracted_info": "Mock structured data based on the prompt",
+  "note": "This is a mock response - real LLM would analyze the actual content"
+}"""
 
     async def count_tokens(self, text: str) -> int:
         """
