@@ -61,8 +61,8 @@ class ClientFactory:
         elif provider == "claude":
             # Import here to avoid dependency if not using Claude
             try:
-                from .claude_client import ClaudeClient
-                return ClaudeClient(config)
+                from .claude_client import ClaudeClient  # type: ignore[attr-defined]
+                return ClaudeClient(config)  # type: ignore[possibly-undefined]
             except ImportError:
                 raise ValueError(
                     "Claude provider requires 'anthropic' package. "
@@ -72,8 +72,8 @@ class ClientFactory:
         elif provider == "openai":
             # Import here to avoid dependency if not using OpenAI
             try:
-                from .openai_client import OpenAIClient
-                return OpenAIClient(config)
+                from .openai_client import OpenAIClient  # type: ignore[attr-defined]
+                return OpenAIClient(config)  # type: ignore[possibly-undefined]
             except ImportError:
                 raise ValueError(
                     "OpenAI provider requires 'openai' package. "
@@ -83,8 +83,8 @@ class ClientFactory:
         elif provider == "ollama":
             # Import here to avoid dependency if not using Ollama
             try:
-                from .ollama_client import OllamaClient
-                return OllamaClient(config)
+                from .ollama_client import OllamaClient  # type: ignore[import-not-found,attr-defined]
+                return OllamaClient(config)  # type: ignore[possibly-undefined]
             except ImportError:
                 raise ValueError(
                     "Ollama provider requires 'ollama' package. "
@@ -128,19 +128,19 @@ class ClientFactory:
 
         # Check for optional providers
         try:
-            import anthropic
+            import anthropic  # type: ignore[import-not-found]
             available.append("claude")
         except ImportError:
             pass
 
         try:
-            import openai
+            import openai  # type: ignore[import-not-found]
             available.append("openai")
         except ImportError:
             pass
 
         try:
-            import ollama
+            import ollama  # type: ignore[import-not-found]
             available.append("ollama")
         except ImportError:
             pass
