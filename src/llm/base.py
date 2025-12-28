@@ -17,6 +17,13 @@ from dataclasses import dataclass
 from datetime import datetime
 from pydantic import BaseModel, Field
 
+# Import utilities (circular import safe - base defines interface only)
+try:
+    from ..utils import RateLimiter
+    _RATE_LIMITER_AVAILABLE = True
+except ImportError:
+    _RATE_LIMITER_AVAILABLE = False
+
 
 class LLMConfig(BaseModel):
     """
@@ -110,6 +117,15 @@ class BaseLLMClient(ABC):
         """
         self.config = config
         self._initialized = False
+
+        # Initialize rate limiter (prevents API throttling)
+        if _RATE_LIMITER_AVAILABLE:
+            self._rate_limiter = RateLimiter(
+                requests_per_minute=config.requests_per_minute,
+                tokens_per_minute=config.tokens_per_minute
+            )
+        else:
+            self._rate_limiter = None
 
     async def __aenter__(self):
         """Async context manager entry - initialize resources."""
@@ -211,6 +227,19 @@ class BaseLLMClient(ABC):
         """
         pass
 
+    async def _acquire_rate_limit(self, tokens: int = 0) -> None:
+        """
+        Acquire rate limit permission before making API call.
+
+        This is called automatically by clients before each request.
+        Implements token bucket algorithm to prevent API throttling.
+
+        Args:
+            tokens: Number of tokens to reserve (0 = just request count)
+        """
+        if self._rate_limiter:
+            await self._rate_limiter.acquire(tokens=tokens)
+
     def get_provider_info(self) -> Dict[str, Any]:
         """
         Get information about the provider and model.
@@ -227,20 +256,112 @@ class BaseLLMClient(ABC):
 
 
 class LLMError(Exception):
-    """Base exception for LLM client errors."""
+    """
+    Base exception for all LLM client errors.
+
+    All LLM-specific exceptions inherit from this, making it easy to catch
+    any LLM-related error with a single except clause.
+    """
+
+    def __init__(self, message: str, provider: Optional[str] = None, model: Optional[str] = None):
+        super().__init__(message)
+        self.message = message
+        self.provider = provider
+        self.model = model
+
+    def __str__(self) -> str:
+        if self.provider and self.model:
+            return f"[{self.provider}/{self.model}] {self.message}"
+        return self.message
+
+
+class RetryableError(LLMError):
+    """
+    Base class for errors that should be retried.
+
+    Inheriting from this signals that the operation might succeed if retried.
+    Examples: network errors, rate limits, temporary service issues.
+    """
     pass
 
 
-class RateLimitError(LLMError):
-    """Raised when rate limit is exceeded."""
+class PermanentError(LLMError):
+    """
+    Base class for errors that should NOT be retried.
+
+    Inheriting from this signals that retrying will not help.
+    Examples: invalid API key, malformed request, content policy violation.
+    """
     pass
 
 
-class ValidationError(LLMError):
-    """Raised when response validation fails."""
+class RateLimitError(RetryableError):
+    """
+    Raised when API rate limit is exceeded.
+
+    This is retryable - the client should wait and try again.
+    """
     pass
 
 
-class TimeoutError(LLMError):
-    """Raised when request times out."""
+class TimeoutError(RetryableError):
+    """
+    Raised when API request times out.
+
+    This is retryable - the request might succeed if tried again.
+    """
+    pass
+
+
+class NetworkError(RetryableError):
+    """
+    Raised when network/connection issues occur.
+
+    This is retryable - the network might recover.
+    """
+    pass
+
+
+class AuthenticationError(PermanentError):
+    """
+    Raised when API authentication fails.
+
+    This is NOT retryable - need to fix API key or credentials.
+    """
+    pass
+
+
+class ValidationError(PermanentError):
+    """
+    Raised when request validation fails.
+
+    This is NOT retryable - need to fix the request parameters.
+    """
+    pass
+
+
+class ContentPolicyError(PermanentError):
+    """
+    Raised when content violates provider's policy.
+
+    This is NOT retryable - need to modify the prompt.
+    """
+    pass
+
+
+class ModelNotFoundError(PermanentError):
+    """
+    Raised when requested model doesn't exist.
+
+    This is NOT retryable - need to use a valid model name.
+    """
+    pass
+
+
+class ContextLengthError(PermanentError):
+    """
+    Raised when prompt exceeds model's context length.
+
+    This is NOT retryable - need to reduce prompt size.
+    """
     pass

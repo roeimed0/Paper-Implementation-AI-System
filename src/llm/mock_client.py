@@ -20,6 +20,7 @@ import re
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 from .base import BaseLLMClient, LLMConfig, LLMResponse, LLMError
+from ..utils import CacheManager
 
 
 class MockLLMClient(BaseLLMClient):
@@ -43,7 +44,12 @@ class MockLLMClient(BaseLLMClient):
     def __init__(self, config: LLMConfig):
         super().__init__(config)
         self._call_count = 0
-        self._cache: Dict[str, str] = {}
+
+        # Use persistent file-based cache (replaces in-memory dict)
+        self._cache = CacheManager(
+            cache_dir="data/cache/mock_llm",
+            ttl_seconds=config.cache_ttl_seconds if hasattr(config, 'cache_ttl_seconds') else 86400
+        )
 
         # Simulation settings (configurable)
         self.simulate_delay = True
@@ -60,8 +66,9 @@ class MockLLMClient(BaseLLMClient):
         self._initialized = True
 
     async def cleanup(self) -> None:
-        """Cleanup mock client (nothing to clean up)."""
-        self._cache.clear()
+        """Cleanup mock client (optionally clear cache)."""
+        # Note: We don't auto-clear cache on cleanup - it persists across sessions
+        # This is intentional: cached responses save costs in future runs
         self._initialized = False
 
     async def generate(
@@ -86,17 +93,22 @@ class MockLLMClient(BaseLLMClient):
         start_time = time.time()
         self._call_count += 1
 
+        # Acquire rate limit permission (prevents API throttling)
+        await self._acquire_rate_limit()
+
         # Check cache first (teaching: caching pattern)
-        cache_key = f"{prompt}:{temperature}:{max_tokens}"
-        if self.config.enable_cache and cache_key in self._cache:
-            cached_content = self._cache[cache_key]
-            return self._build_response(
-                content=cached_content,
-                prompt_tokens=await self.count_tokens(prompt),
-                completion_tokens=await self.count_tokens(cached_content),
-                latency_ms=(time.time() - start_time) * 1000,
-                cached=True
-            )
+        cache_key = f"mock:{prompt}:{temperature}:{max_tokens}"
+        if self.config.enable_cache:
+            cached_response = self._cache.get(cache_key)
+            if cached_response:
+                # Cache hit! Return cached content
+                return self._build_response(
+                    content=cached_response,
+                    prompt_tokens=await self.count_tokens(prompt),
+                    completion_tokens=await self.count_tokens(cached_response),
+                    latency_ms=(time.time() - start_time) * 1000,
+                    cached=True
+                )
 
         # Simulate occasional errors (teaching: error handling)
         if self.error_rate > 0 and (self._call_count % int(1 / self.error_rate)) == 0:
@@ -111,9 +123,9 @@ class MockLLMClient(BaseLLMClient):
         # Generate mock response based on prompt patterns
         content = self._generate_smart_response(prompt, system_prompt)
 
-        # Cache response
+        # Cache response (persists to disk for future runs)
         if self.config.enable_cache:
-            self._cache[cache_key] = content
+            self._cache.set(cache_key, content)
 
         # Build standardized response
         prompt_tokens = await self.count_tokens(prompt)
@@ -299,9 +311,12 @@ SUGGESTED IMPROVEMENTS:
 
         Useful for debugging and understanding usage patterns.
         """
+        cache_stats = self._cache.get_stats()
         return {
             "call_count": self._call_count,
-            "cache_size": len(self._cache),
+            "cache_entries": cache_stats["total_entries"],
+            "cache_hit_rate": cache_stats["hit_rate_percent"],
+            "cache_size_mb": cache_stats["total_size_mb"],
             "provider": self.config.provider,
             "model": self.config.model,
         }
