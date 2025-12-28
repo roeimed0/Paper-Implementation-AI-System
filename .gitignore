@@ -101,6 +101,27 @@ temp/
 *.tmp
 
 # ============================================================================
+# Reference Documentation (from other projects - not ours!)
+# ============================================================================
+md_files/
+notebooks/
+examples/basic_completion.py
+examples/chain_prompts.py
+examples/chat_session.py
+examples/data/
+examples/genai_project.jpg
+data/Generative_AI_Mastery_Checklist_Comprehensive.docx
+data/Generative_AI_Mastery_Checklist_Comprehensive.pdf
+data/prompts/  # Reference prompts from template
+data/sample.json
+
+# ============================================================================
+# Unused Template Files
+# ============================================================================
+src/handlers/
+src/prompt_engineering/
+
+# ============================================================================
 # Node.js (legacy - can remove if not needed)
 # ============================================================================
 node_modules/
