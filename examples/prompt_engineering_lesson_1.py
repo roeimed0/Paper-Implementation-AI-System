@@ -116,7 +116,12 @@ async def extract_algorithm_info(description: str) -> AlgorithmInfo:
     system_prompt, user_prompt = create_extraction_prompt(description)
 
     # Call LLM
-    config = LLMConfig(provider="mock", model="mock-v1")
+    config = LLMConfig(
+        provider="mock",
+        model="mock-v1",
+        api_key=None,  # Not needed for mock
+        base_url=None  # Not needed for mock
+    )
     async with MockLLMClient(config) as client:
         response = await client.generate(
             user_prompt,
